@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ecommerce-config
+  namespace: ecommerce
+data:
+  CATALOGUE_URL: "http://catalogue:3001"
+  CART_URL: "http://cart:3002"
+  AUTH_URL: "http://auth:3003"
+  ORDERS_URL: "http://orders:3004"
+  PAYMENT_URL: "http://payment:3005"
+  NOTIFICATIONS_URL: "http://notifications:3006"

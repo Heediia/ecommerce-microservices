@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment
+  namespace: ecommerce
+spec:
+  selector:
+    app: payment
+
+  ports:
+    - protocol: TCP
+      port: 3005
+      targetPort: 3005
+
+  type: ClusterIP

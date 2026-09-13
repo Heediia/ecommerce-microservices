@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifications
+  namespace: ecommerce
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: notifications
+
+  template:
+    metadata:
+      labels:
+        app: notifications
+
+    spec:
+      containers:
+        - name: notifications
+          image: acrhediaecommerce.azurecr.io/notifications:latest
+
+          ports:
+            - containerPort: 3006
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3006
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3006
+            initialDelaySeconds: 20
+            periodSeconds: 20

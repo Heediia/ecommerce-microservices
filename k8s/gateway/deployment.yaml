@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: ecommerce
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: gateway
+
+  template:
+    metadata:
+      labels:
+        app: gateway
+
+    spec:
+      containers:
+        - name: gateway
+          image: acrhediaecommerce.azurecr.io/api-gateway:latest
+
+          ports:
+            - containerPort: 3000
+
+          env:
+            - name: AUTH_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ecommerce-config
+                  key: AUTH_URL
+
+            - name: CATALOGUE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ecommerce-config
+                  key: CATALOGUE_URL
+
+            - name: CART_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ecommerce-config
+                  key: CART_URL
+
+            - name: ORDERS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ecommerce-config
+                  key: ORDERS_URL
+
+            - name: PAYMENT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ecommerce-config
+                  key: PAYMENT_URL
+
+            - name: NOTIFICATIONS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ecommerce-config
+                  key: NOTIFICATIONS_URL
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 20
