@@ -1,0 +1,42 @@
+namespace: ecommerce
+
+images:
+  catalogue:
+    repository: acrhediaecommerce.azurecr.io/catalogue
+    tag: latest
+
+  cart:
+    repository: acrhediaecommerce.azurecr.io/cart
+    tag: latest
+
+  auth:
+    repository: acrhediaecommerce.azurecr.io/auth
+    tag: latest
+
+  orders:
+    repository: acrhediaecommerce.azurecr.io/orders
+    tag: latest
+
+  payment:
+    repository: acrhediaecommerce.azurecr.io/payment
+    tag: latest
+
+  notifications:
+    repository: acrhediaecommerce.azurecr.io/notifications
+    tag: latest
+
+  gateway:
+    repository: acrhediaecommerce.azurecr.io/api-gateway
+    tag: latest
+
+  frontend:
+    repository: acrhediaecommerce.azurecr.io/frontend
+    tag: latest
+
+replicaCount: 1
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  cpuUtilization: 70
