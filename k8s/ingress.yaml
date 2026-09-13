@@ -1,0 +1,82 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecommerce-ingress
+  namespace: ecommerce
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+
+          # Frontend
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+
+          # API Gateway - Auth
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 3000
+
+          # API Gateway - Catalogue
+          - path: /catalogue
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 3000
+
+          # API Gateway - Cart
+          - path: /cart
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 3000
+
+          # API Gateway - Orders
+          - path: /orders
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 3000
+
+          # API Gateway - Payment
+          - path: /payment
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 3000
+
+          # API Gateway - Notifications
+          - path: /notifications
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 3000
+
+          # API Gateway - Health
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 3000

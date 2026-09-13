@@ -171,6 +171,7 @@ app.delete("/cart/:userId", (req, res) => {
   });
 });
 
+
 // ===============================
 // START SERVER
 // ===============================
@@ -179,4 +180,7 @@ app.listen(PORT, () => {
   console.log(
     `Cart Service running on http://localhost:${PORT}`
   );
+});
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
 });

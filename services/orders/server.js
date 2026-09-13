@@ -141,3 +141,6 @@ app.listen(PORT, () => {
         `Orders Service running on http://localhost:${PORT}`
     );
 });
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});

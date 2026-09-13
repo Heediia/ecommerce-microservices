@@ -116,3 +116,6 @@ app.get("/profile", async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Auth Service running on http://localhost:${PORT}`);
 });
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});

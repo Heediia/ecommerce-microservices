@@ -3,6 +3,15 @@ const express = require("express");
 const app = express();
 const PORT = 3005;
 
+// URLs des autres microservices
+// En local : localhost
+// Dans Kubernetes : valeurs fournies par les variables d'environnement
+const ORDERS_URL =
+  process.env.ORDERS_URL || "http://localhost:3004";
+
+const NOTIFICATIONS_URL =
+  process.env.NOTIFICATIONS_URL || "http://localhost:3006";
+
 app.use(express.json());
 
 let payments = [];
@@ -12,6 +21,13 @@ app.get("/", (req, res) => {
   res.json({
     service: "Payment",
     message: "Payment Service fonctionne !"
+  });
+});
+
+// Health check
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok"
   });
 });
 
@@ -58,6 +74,7 @@ app.post("/payments", async (req, res) => {
       method
     } = req.body || {};
 
+    // Vérification des données
     if (
       !orderId ||
       !userId ||
@@ -70,7 +87,7 @@ app.post("/payments", async (req, res) => {
       });
     }
 
-    // Check if this order was already paid
+    // Vérifier si la commande est déjà payée
     const existingPayment = payments.find(
       (payment) =>
         payment.orderId === orderId &&
@@ -85,7 +102,7 @@ app.post("/payments", async (req, res) => {
       });
     }
 
-    // Create payment
+    // Créer le paiement
     const newPayment = {
       id:
         payments.length > 0
@@ -97,7 +114,7 @@ app.post("/payments", async (req, res) => {
       amount: Number(amount),
       method: method,
 
-      // Simulated payment
+      // Paiement simulé
       status: "paid",
 
       createdAt: new Date().toISOString()
@@ -105,10 +122,10 @@ app.post("/payments", async (req, res) => {
 
     payments.push(newPayment);
 
-    // Update order status
+    // Mettre à jour le statut de la commande
     try {
       const orderResponse = await fetch(
-        `http://localhost:3004/orders/${orderId}/status`,
+        `${ORDERS_URL}/orders/${orderId}/status`,
         {
           method: "PUT",
           headers: {
@@ -132,10 +149,10 @@ app.post("/payments", async (req, res) => {
       );
     }
 
-    // Create notification
+    // Créer une notification
     try {
       await fetch(
-        "http://localhost:3006/notifications",
+        `${NOTIFICATIONS_URL}/notifications`,
         {
           method: "POST",
           headers: {
@@ -223,6 +240,7 @@ app.delete("/payments/:id", (req, res) => {
   });
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(
     `Payment Service running on http://localhost:${PORT}`

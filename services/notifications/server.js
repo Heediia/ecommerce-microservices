@@ -202,3 +202,6 @@ app.listen(PORT, () => {
         `Notification Service running on http://localhost:${PORT}`
     );
 });
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});

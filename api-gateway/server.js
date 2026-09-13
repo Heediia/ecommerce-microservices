@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const { createProxyMiddleware } = require("http-proxy-middleware");
@@ -5,6 +7,29 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const app = express();
 
 const PORT = 3000;
+
+
+// ========================================
+// SERVICE URLS
+// ========================================
+
+const AUTH_URL = process.env.AUTH_URL || "http://localhost:3003";
+
+const CATALOGUE_URL =
+    process.env.CATALOGUE_URL || "http://localhost:3001";
+
+const CART_URL =
+    process.env.CART_URL || "http://localhost:3002";
+
+const ORDERS_URL =
+    process.env.ORDERS_URL || "http://localhost:3004";
+
+const PAYMENT_URL =
+    process.env.PAYMENT_URL || "http://localhost:3005";
+
+const NOTIFICATIONS_URL =
+    process.env.NOTIFICATIONS_URL || "http://localhost:3006";
+
 
 app.use(cors());
 
@@ -16,7 +41,7 @@ app.use(cors());
 app.use(
     "/auth",
     createProxyMiddleware({
-        target: "http://localhost:3003",
+        target: AUTH_URL,
         changeOrigin: true
     })
 );
@@ -29,7 +54,7 @@ app.use(
 app.use(
     "/catalogue",
     createProxyMiddleware({
-        target: "http://localhost:3001",
+        target: CATALOGUE_URL,
         changeOrigin: true
     })
 );
@@ -42,7 +67,7 @@ app.use(
 app.use(
     "/cart",
     createProxyMiddleware({
-        target: "http://localhost:3002",
+        target: CART_URL,
         changeOrigin: true,
         pathRewrite: {
             "^/": "/cart/"
@@ -58,7 +83,7 @@ app.use(
 app.use(
     "/orders",
     createProxyMiddleware({
-        target: "http://localhost:3004",
+        target: ORDERS_URL,
         changeOrigin: true,
         pathRewrite: {
             "^/": "/orders/"
@@ -74,7 +99,7 @@ app.use(
 app.use(
     "/payment",
     createProxyMiddleware({
-        target: "http://localhost:3005",
+        target: PAYMENT_URL,
         changeOrigin: true,
 
         pathRewrite: (path) => {
@@ -84,15 +109,20 @@ app.use(
 );
 
 
+// ========================================
+// NOTIFICATIONS SERVICE
+// ========================================
+
 app.use(
-  "/notifications",
-  createProxyMiddleware({
-    target: "http://localhost:3006",
-    changeOrigin: true,
-    pathRewrite: (path) => {
-      return "/notifications" + path;
-    }
-  })
+    "/notifications",
+    createProxyMiddleware({
+        target: NOTIFICATIONS_URL,
+        changeOrigin: true,
+
+        pathRewrite: (path) => {
+            return "/notifications" + path;
+        }
+    })
 );
 
 
@@ -105,6 +135,15 @@ app.get("/", (req, res) => {
     res.json({
         service: "API Gateway",
         message: "API Gateway fonctionne !"
+    });
+
+});
+
+
+app.get("/health", (req, res) => {
+
+    res.json({
+        status: "ok"
     });
 
 });
