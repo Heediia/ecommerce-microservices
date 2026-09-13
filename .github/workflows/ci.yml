@@ -84,3 +84,40 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+  docker-build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - name: auth
+            context: ./services/auth
+          - name: cart
+            context: ./services/cart
+          - name: catalogue
+            context: ./services/catalogue
+          - name: orders
+            context: ./services/orders
+          - name: payment
+            context: ./services/payment
+          - name: notifications
+            context: ./services/notifications
+          - name: api-gateway
+            context: ./api-gateway
+          - name: frontend
+            context: ./frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          push: false
+          tags: ecommerce-${{ matrix.name }}:ci
