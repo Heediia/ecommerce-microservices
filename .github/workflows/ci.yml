@@ -41,6 +41,57 @@ jobs:
         working-directory: services/${{ matrix.service }}
         run: node --check server.js
 
+  notifications-smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: services/notifications/package-lock.json
+
+      - name: Install dependencies
+        working-directory: services/notifications
+        run: npm ci
+
+      - name: Check Notifications service
+        working-directory: services/notifications
+        run: node --check server.js
+
+      - name: Start Notifications service
+        working-directory: services/notifications
+        run: |
+          node server.js > notifications.log 2>&1 &
+          echo $! > notifications.pid
+
+      - name: Wait for Notifications service
+        run: sleep 5
+
+      - name: Test Notifications health endpoint
+        run: |
+          curl --fail http://localhost:3006/health
+
+      - name: Show Notifications logs if test fails
+        if: failure()
+        working-directory: services/notifications
+        run: |
+          if [ -f notifications.log ]; then
+            cat notifications.log
+          fi
+
+      - name: Stop Notifications service
+        if: always()
+        working-directory: services/notifications
+        run: |
+          if [ -f notifications.pid ]; then
+            kill $(cat notifications.pid) || true
+          fi
+
   gateway:
     runs-on: ubuntu-latest
 
@@ -93,18 +144,25 @@ jobs:
         include:
           - name: auth
             context: ./services/auth
+
           - name: cart
             context: ./services/cart
+
           - name: catalogue
             context: ./services/catalogue
+
           - name: orders
             context: ./services/orders
+
           - name: payment
             context: ./services/payment
+
           - name: notifications
             context: ./services/notifications
+
           - name: api-gateway
             context: ./api-gateway
+
           - name: frontend
             context: ./frontend
 
